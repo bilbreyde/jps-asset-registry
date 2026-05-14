@@ -5,7 +5,7 @@ const client = new CosmosClient({
   key: process.env.COSMOS_KEY,
 });
 
-const DATABASE  = process.env.COSMOS_DATABASE  || 'jps-assets';
+const DATABASE  = process.env.COSMOS_DATABASE  || 'jps-asset-registry';
 const CONTAINER = process.env.COSMOS_CONTAINER || 'assets';
 
 module.exports = {
