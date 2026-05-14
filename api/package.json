@@ -1,0 +1,11 @@
+{
+  "name": "jps-asset-registry-api",
+  "version": "1.0.0",
+  "description": "Azure Functions API for JPS Asset Registry",
+  "scripts": {
+    "start": "func start"
+  },
+  "dependencies": {
+    "@azure/cosmos": "^4.1.0"
+  }
+}

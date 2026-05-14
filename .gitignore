@@ -11,6 +11,9 @@ build/
 .env.test.local
 .env.production.local
 
+# Azure Functions local settings (contains secrets)
+api/local.settings.json
+
 # logs
 npm-debug.log*
 yarn-debug.log*
