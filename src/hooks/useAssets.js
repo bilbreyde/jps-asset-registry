@@ -1,31 +1,81 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { getAssets, createAsset, updateAsset, deleteAsset } from '../utils/api';
 
-export function useAssets() {
-  const [assets, setAssets]   = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState(null);
+export function useAssets({
+  pageSize    = 50,
+  search      = '',
+  filterType  = '',
+  filterStatus= '',
+  filterDept  = '',
+} = {}) {
+  const [assets,      setAssets]  = useState([]);
+  const [loading,     setLoading] = useState(true);
+  const [error,       setError]   = useState(null);
+  const [totalCount,  setTotal]   = useState(0);
+  const [departments, setDepts]   = useState([]);
+  const [currentPage, setPage]    = useState(0);
+  const [hasMore,     setHasMore] = useState(false);
 
-  const load = useCallback(async () => {
+  // tokenStack[i] = continuationToken needed to fetch page i (undefined = no token = page 0)
+  const tokenStack = useRef([undefined]);
+
+  const fetchPage = useCallback(async (pageIdx) => {
     setLoading(true);
     setError(null);
     try {
-      const data = await getAssets();
-      setAssets(data);
+      const params = {};
+      params.pageSize = pageSize;
+      if (tokenStack.current[pageIdx]) params.continuationToken = tokenStack.current[pageIdx];
+      if (search)       params.q          = search;
+      if (filterDept)   params.department = filterDept;
+      if (filterType)   params.type       = filterType;
+      if (filterStatus) params.status     = filterStatus;
+
+      const data = await getAssets(params);
+
+      setAssets(data.assets);
+      setTotal(data.count);
+      setHasMore(data.hasMore);
+      setPage(pageIdx);
+
+      if (data.hasMore && data.continuationToken) {
+        tokenStack.current[pageIdx + 1] = data.continuationToken;
+      }
+
+      if (data.departments !== undefined) {
+        setDepts(data.departments);
+      }
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [pageSize, search, filterType, filterStatus, filterDept]);
 
-  useEffect(() => { load(); }, [load]);
+  // Reset to page 0 whenever filters or page size change
+  useEffect(() => {
+    tokenStack.current = [undefined];
+    fetchPage(0);
+  }, [fetchPage]);
+
+  const goNext = useCallback(() => {
+    if (hasMore) fetchPage(currentPage + 1);
+  }, [hasMore, currentPage, fetchPage]);
+
+  const goPrev = useCallback(() => {
+    if (currentPage > 0) fetchPage(currentPage - 1);
+  }, [currentPage, fetchPage]);
+
+  const reload = useCallback(() => {
+    tokenStack.current = [undefined];
+    fetchPage(0);
+  }, [fetchPage]);
 
   const addAsset = useCallback(async (data) => {
     const created = await createAsset(data);
-    setAssets(prev => [...prev, created]);
+    reload();
     return created;
-  }, []);
+  }, [reload]);
 
   const editAsset = useCallback(async (id, data) => {
     const updated = await updateAsset(id, data);
@@ -35,8 +85,13 @@ export function useAssets() {
 
   const removeAsset = useCallback(async (id) => {
     await deleteAsset(id);
-    setAssets(prev => prev.filter(a => a.id !== id));
-  }, []);
+    reload();
+  }, [reload]);
 
-  return { assets, loading, error, addAsset, editAsset, removeAsset, reload: load };
+  return {
+    assets, loading, error,
+    totalCount, departments, currentPage, hasMore,
+    goNext, goPrev, reload,
+    addAsset, editAsset, removeAsset,
+  };
 }

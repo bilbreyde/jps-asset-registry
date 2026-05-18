@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 import AssetTable from './components/AssetTable';
 import AssetForm from './components/AssetForm';
@@ -41,15 +41,30 @@ function CloseIcon() {
 
 /* ── Main App ─────────────────────────────────────────────── */
 function App() {
-  const { assets, loading, error, addAsset, editAsset, removeAsset } = useAssets();
-  const { toasts, toast, dismiss } = useToast();
-
+  const [searchInput,  setSearchInput]  = useState('');
   const [search,       setSearch]       = useState('');
   const [filterType,   setFilterType]   = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [filterDept,   setFilterDept]   = useState('');
+  const [pageSize,     setPageSize]     = useState(50);
   const [showModal,    setShowModal]    = useState(false);
   const [editing,      setEditing]      = useState(null);
+
+  const debounceRef = useRef(null);
+  const handleSearchChange = (val) => {
+    setSearchInput(val);
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => setSearch(val), 300);
+  };
+
+  const {
+    assets, loading, error,
+    totalCount, departments, currentPage, hasMore,
+    goNext, goPrev,
+    addAsset, editAsset, removeAsset,
+  } = useAssets({ pageSize, search, filterType, filterStatus, filterDept });
+
+  const { toasts, toast, dismiss } = useToast();
 
   const prevError = useRef(null);
   useEffect(() => {
@@ -59,26 +74,11 @@ function App() {
     prevError.current = error;
   }, [error]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const departments = useMemo(() => {
-    const s = new Set(assets.map(a => a.department).filter(Boolean));
-    return Array.from(s).sort();
-  }, [assets]);
-
-  const filtered = useMemo(() => {
-    const q = search.toLowerCase();
-    return assets.filter(a => {
-      if (q && !['assetTag', 'name', 'serialNumber', 'location', 'department', 'assignedTo']
-        .some(k => String(a[k] ?? '').toLowerCase().includes(q))) return false;
-      if (filterType   && a.type       !== filterType)   return false;
-      if (filterStatus && a.status     !== filterStatus) return false;
-      if (filterDept   && a.department !== filterDept)   return false;
-      return true;
-    });
-  }, [assets, search, filterType, filterStatus, filterDept]);
-
   const hasFilters = !!(search || filterType || filterStatus || filterDept);
-
-  const clearFilters = () => { setSearch(''); setFilterType(''); setFilterStatus(''); setFilterDept(''); };
+  const clearFilters = () => {
+    setSearchInput(''); setSearch('');
+    setFilterType(''); setFilterStatus(''); setFilterDept('');
+  };
 
   const openAdd    = ()      => { setEditing(null); setShowModal(true); };
   const openEdit   = (asset) => { setEditing(asset); setShowModal(true); };
@@ -107,6 +107,9 @@ function App() {
       toast(err.message, 'error');
     }
   };
+
+  const startItem = totalCount === 0 ? 0 : currentPage * pageSize + 1;
+  const endItem   = Math.min(currentPage * pageSize + assets.length, totalCount);
 
   return (
     <div className="app">
@@ -139,12 +142,12 @@ function App() {
               className="search-input"
               type="search"
               placeholder="Search by tag, name, serial, location…"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
+              value={searchInput}
+              onChange={e => handleSearchChange(e.target.value)}
               aria-label="Search assets"
             />
-            {search && (
-              <button className="search-clear" onClick={() => setSearch('')} aria-label="Clear search">×</button>
+            {searchInput && (
+              <button className="search-clear" onClick={() => handleSearchChange('')} aria-label="Clear search">×</button>
             )}
           </div>
           <div className="toolbar-filters">
@@ -166,6 +169,51 @@ function App() {
           )}
         </div>
 
+        {/* Pagination bar */}
+        <div className="pagination-bar">
+          <span className="pagination-info">
+            {loading
+              ? 'Loading…'
+              : totalCount === 0
+                ? 'No records'
+                : `Showing ${startItem.toLocaleString()}–${endItem.toLocaleString()} of ${totalCount.toLocaleString()} records`
+            }
+          </span>
+          <div className="pagination-controls">
+            <label className="page-size-label">
+              Per page:
+              <select
+                className="page-size-select"
+                value={pageSize}
+                onChange={e => setPageSize(Number(e.target.value))}
+                aria-label="Records per page"
+              >
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+                <option value={200}>200</option>
+              </select>
+            </label>
+            <button
+              className="page-btn"
+              onClick={goPrev}
+              disabled={currentPage === 0 || loading}
+              aria-label="Previous page"
+            >
+              ← Prev
+            </button>
+            <span className="page-num">Page {currentPage + 1}</span>
+            <button
+              className="page-btn"
+              onClick={goNext}
+              disabled={!hasMore || loading}
+              aria-label="Next page"
+            >
+              Next →
+            </button>
+          </div>
+        </div>
+
         {/* Content */}
         {loading
           ? (
@@ -174,7 +222,7 @@ function App() {
               <p>Loading assets…</p>
             </div>
           )
-          : <AssetTable assets={filtered} onEdit={openEdit} onDelete={handleDelete} />
+          : <AssetTable assets={assets} onEdit={openEdit} onDelete={handleDelete} />
         }
       </main>
 

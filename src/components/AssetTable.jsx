@@ -73,9 +73,6 @@ function AssetTable({ assets, onEdit, onDelete }) {
 
   return (
     <div className="table-card">
-      <div className="table-topbar">
-        <span className="table-count">{assets.length} {assets.length === 1 ? 'asset' : 'assets'}</span>
-      </div>
       <div className="table-scroll">
         <table className="asset-table">
           <thead>
