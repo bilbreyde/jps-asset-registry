@@ -5,7 +5,6 @@ import AssetForm from './components/AssetForm';
 import Toast from './components/Toast';
 import { useAssets } from './hooks/useAssets';
 import { useToast } from './hooks/useToast';
-import { TYPE_OPTIONS, STATUS_OPTIONS } from './utils/fields';
 
 /* ── Inline SVG icons ─────────────────────────────────────── */
 function LogoMark() {
@@ -41,12 +40,10 @@ function CloseIcon() {
 
 /* ── Main App ─────────────────────────────────────────────── */
 function App() {
-  const [searchInput,  setSearchInput]  = useState('');
-  const [search,       setSearch]       = useState('');
-  const [filterType,   setFilterType]   = useState('');
-  const [filterStatus, setFilterStatus] = useState('');
-  const [filterDept,   setFilterDept]   = useState('');
-  const [pageSize,     setPageSize]     = useState(50);
+  const [searchInput, setSearchInput] = useState('');
+  const [search,      setSearch]      = useState('');
+  const [filterDept,  setFilterDept]  = useState('');
+  const [pageSize,    setPageSize]    = useState(50);
   const [showModal,    setShowModal]    = useState(false);
   const [editing,      setEditing]      = useState(null);
 
@@ -62,7 +59,7 @@ function App() {
     totalCount, departments, currentPage, hasMore,
     goNext, goPrev,
     addAsset, editAsset, removeAsset,
-  } = useAssets({ pageSize, search, filterType, filterStatus, filterDept });
+  } = useAssets({ pageSize, search, filterDept });
 
   const { toasts, toast, dismiss } = useToast();
 
@@ -74,10 +71,10 @@ function App() {
     prevError.current = error;
   }, [error]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const hasFilters = !!(search || filterType || filterStatus || filterDept);
+  const hasFilters = !!(search || filterDept);
   const clearFilters = () => {
     setSearchInput(''); setSearch('');
-    setFilterType(''); setFilterStatus(''); setFilterDept('');
+    setFilterDept('');
   };
 
   const openAdd    = ()      => { setEditing(null); setShowModal(true); };
@@ -151,14 +148,6 @@ function App() {
             )}
           </div>
           <div className="toolbar-filters">
-            <select className="filter-select" value={filterType} onChange={e => setFilterType(e.target.value)} aria-label="Filter by category">
-              <option value="">All Categories</option>
-              {TYPE_OPTIONS.map(t => <option key={t} value={t}>{t}</option>)}
-            </select>
-            <select className="filter-select" value={filterStatus} onChange={e => setFilterStatus(e.target.value)} aria-label="Filter by status">
-              <option value="">All Statuses</option>
-              {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
-            </select>
             <select className="filter-select" value={filterDept} onChange={e => setFilterDept(e.target.value)} aria-label="Filter by department">
               <option value="">All Departments</option>
               {departments.map(d => <option key={d} value={d}>{d}</option>)}

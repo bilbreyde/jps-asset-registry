@@ -2,11 +2,9 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { getAssets, createAsset, updateAsset, deleteAsset } from '../utils/api';
 
 export function useAssets({
-  pageSize    = 50,
-  search      = '',
-  filterType  = '',
-  filterStatus= '',
-  filterDept  = '',
+  pageSize   = 50,
+  search     = '',
+  filterDept = '',
 } = {}) {
   const [assets,      setAssets]  = useState([]);
   const [loading,     setLoading] = useState(true);
@@ -26,10 +24,8 @@ export function useAssets({
       const params = {};
       params.pageSize = pageSize;
       if (tokenStack.current[pageIdx]) params.continuationToken = tokenStack.current[pageIdx];
-      if (search)       params.q          = search;
-      if (filterDept)   params.department = filterDept;
-      if (filterType)   params.type       = filterType;
-      if (filterStatus) params.status     = filterStatus;
+      if (search)     params.q          = search;
+      if (filterDept) params.department = filterDept;
 
       const data = await getAssets(params);
 
@@ -52,7 +48,7 @@ export function useAssets({
     } finally {
       setLoading(false);
     }
-  }, [pageSize, search, filterType, filterStatus, filterDept]);
+  }, [pageSize, search, filterDept]);
 
   // Reset to page 0 whenever filters or page size change
   useEffect(() => {

@@ -1,19 +1,14 @@
 export const ASSET_FIELDS = [
-  { key: 'assetTag',      label: 'Asset Tag',      type: 'text',   required: true },
-  { key: 'name',          label: 'Asset Name',      type: 'text',   required: true },
-  { key: 'type',          label: 'Category',        type: 'select', required: true,
-    options: ['Medical Equipment', 'IT Equipment', 'Furniture', 'Facilities', 'Vehicle', 'Other'] },
-  { key: 'manufacturer',  label: 'Manufacturer',    type: 'text' },
-  { key: 'model',         label: 'Model',           type: 'text' },
-  { key: 'serialNumber',  label: 'Serial Number',   type: 'text' },
-  { key: 'location',      label: 'Location',        type: 'text',   required: true },
-  { key: 'department',    label: 'Department',      type: 'text',   required: true },
-  { key: 'status',        label: 'Status',          type: 'select', required: true,
-    options: ['In Use', 'Available', 'Under Maintenance', 'Retired'] },
-  { key: 'assignedTo',    label: 'Assigned To',     type: 'text' },
-  { key: 'purchaseDate',  label: 'Purchase Date',   type: 'date' },
-  { key: 'warrantyExpiry',label: 'Warranty Expiry', type: 'date' },
+  { key: '_CI_Name_Type_And_Model', label: 'Name',          type: 'text', required: true },
+  { key: 'AssetTag',                label: 'Asset Tag',     type: 'text', required: true },
+  { key: 'ivnt_AssetFullType',      label: 'Type',          type: 'text' },
+  { key: 'ivnt_AssignedModel',      label: 'Model',         type: 'text' },
+  { key: 'SerialNumber',            label: 'Serial Number', type: 'text' },
+  { key: 'ivnt_LocationName',       label: 'Location',      type: 'text' },
+  { key: '_Department',             label: 'Department',    type: 'text', required: true },
+  { key: '_Floor',                  label: 'Floor',         type: 'text' },
+  { key: '_Area',                   label: 'Area',          type: 'text' },
 ];
 
-export const TYPE_OPTIONS    = ['Medical Equipment', 'IT Equipment', 'Furniture', 'Facilities', 'Vehicle', 'Other'];
-export const STATUS_OPTIONS  = ['In Use', 'Available', 'Under Maintenance', 'Retired'];
+export const TYPE_OPTIONS   = [];
+export const STATUS_OPTIONS = [];

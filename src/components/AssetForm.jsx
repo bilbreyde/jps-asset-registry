@@ -6,15 +6,11 @@ const FIELD_MAP = Object.fromEntries(ASSET_FIELDS.map(f => [f.key, f]));
 const SECTIONS = [
   {
     title: 'Identity',
-    keys: ['assetTag', 'name', 'type', 'manufacturer', 'model', 'serialNumber'],
+    keys: ['_CI_Name_Type_And_Model', 'AssetTag', 'ivnt_AssetFullType', 'ivnt_AssignedModel', 'SerialNumber'],
   },
   {
-    title: 'Assignment & Location',
-    keys: ['location', 'department', 'status', 'assignedTo'],
-  },
-  {
-    title: 'Dates',
-    keys: ['purchaseDate', 'warrantyExpiry'],
+    title: 'Location',
+    keys: ['ivnt_LocationName', '_Department', '_Floor', '_Area'],
   },
 ];
 
@@ -97,7 +93,7 @@ function AssetForm({ initialData, onSubmit, onCancel }) {
             {section.keys.map(key => {
               const field = FIELD_MAP[key];
               return field
-                ? <Field key={key} field={field} value={data[key]} error={errors[key]} onChange={handleChange} />
+                ? <Field key={key} field={field} value={data[key] ?? ''} error={errors[key]} onChange={handleChange} />
                 : null;
             })}
           </div>

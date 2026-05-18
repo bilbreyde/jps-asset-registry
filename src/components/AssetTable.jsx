@@ -1,23 +1,15 @@
 import React, { useState } from 'react';
 import { ASSET_FIELDS } from '../utils/fields';
 
-const COLUMNS = ['assetTag', 'name', 'type', 'location', 'department', 'status', 'assignedTo'];
-
-const BADGE_CLASS = {
-  'In Use':            'badge-in-use',
-  'Available':         'badge-available',
-  'Under Maintenance': 'badge-maintenance',
-  'Retired':           'badge-retired',
-};
-
-function StatusBadge({ status }) {
-  return (
-    <span className={`badge ${BADGE_CLASS[status] ?? 'badge-default'}`}>
-      <span className="badge-dot" aria-hidden="true" />
-      {status ?? '—'}
-    </span>
-  );
-}
+const COLUMNS = [
+  '_CI_Name_Type_And_Model',
+  'AssetTag',
+  'ivnt_AssetFullType',
+  'SerialNumber',
+  'ivnt_LocationName',
+  '_Department',
+  '_Floor',
+];
 
 function SortArrow({ dir }) {
   return (
@@ -53,7 +45,7 @@ function EmptyState() {
 }
 
 function AssetTable({ assets, onEdit, onDelete }) {
-  const [sortKey, setSortKey] = useState('name');
+  const [sortKey, setSortKey] = useState('_CI_Name_Type_And_Model');
   const [sortDir, setSortDir] = useState('asc');
 
   const toggleSort = (key) => {
@@ -61,7 +53,7 @@ function AssetTable({ assets, onEdit, onDelete }) {
     else { setSortKey(key); setSortDir('asc'); }
   };
 
-  const sorted = [...assets].sort((a, b) => {
+  const sorted = [...(assets ?? [])].sort((a, b) => {
     const av = String(a[sortKey] ?? '').toLowerCase();
     const bv = String(b[sortKey] ?? '').toLowerCase();
     return sortDir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av);
@@ -98,9 +90,9 @@ function AssetTable({ assets, onEdit, onDelete }) {
               <tr key={asset.id} className={i % 2 === 1 ? 'row-stripe' : ''}>
                 {COLUMNS.map(col => (
                   <td key={col}>
-                    {col === 'status'
-                      ? <StatusBadge status={asset[col]} />
-                      : asset[col] || <span className="cell-nil">—</span>}
+                    {asset[col] != null && asset[col] !== ''
+                      ? asset[col]
+                      : <span className="cell-nil">—</span>}
                   </td>
                 ))}
                 <td className="td-actions">
