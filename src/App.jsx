@@ -109,7 +109,7 @@ function App() {
   };
 
   const startItem = totalCount === 0 ? 0 : currentPage * pageSize + 1;
-  const endItem   = Math.min(currentPage * pageSize + assets.length, totalCount);
+  const endItem   = Math.min(currentPage * pageSize + (assets?.length ?? 0), totalCount);
 
   return (
     <div className="app">

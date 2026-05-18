@@ -45,11 +45,16 @@ module.exports = async function (context, req) {
       const where = conditions.length ? ` WHERE ${conditions.join(' AND ')}` : '';
 
       const countSpec = { query: `SELECT VALUE COUNT(1) FROM c${where}`, parameters };
-      const pageSpec  = { query: `SELECT * FROM c${where} ORDER BY c._ts DESC`, parameters };
+      // ORDER BY c._ts requires a composite index when combined with a WHERE clause.
+      // Use it only for the unfiltered case where the default _ts range index suffices.
+      const pageSpec  = { query: `SELECT * FROM c${where}${where ? '' : ' ORDER BY c._ts DESC'}`, parameters };
+
+      const pageOptions = { maxItemCount: pageSize };
+      if (token) pageOptions.continuationToken = token;
 
       const promises = [
         c.items.query(countSpec).fetchAll().then(r => r.resources[0] ?? 0),
-        c.items.query(pageSpec, { maxItemCount: pageSize, continuationToken: token }).fetchNext(),
+        c.items.query(pageSpec, pageOptions).fetchNext(),
       ];
 
       if (isFirst) {
@@ -67,7 +72,7 @@ module.exports = async function (context, req) {
       const departments = isFirst ? results[2] : undefined;
 
       const body = {
-        assets:            pageResult.resources,
+        assets:            pageResult.resources ?? [],
         count,
         continuationToken: pageResult.hasMoreResults ? b64Encode(pageResult.continuationToken) : null,
         hasMore:           pageResult.hasMoreResults,

@@ -33,16 +33,18 @@ export function useAssets({
 
       const data = await getAssets(params);
 
-      setAssets(data.assets);
-      setTotal(data.count);
-      setHasMore(data.hasMore);
+      // Normalize: API always returns { assets, count, hasMore } but guard defensively
+      const responseAssets = Array.isArray(data?.assets) ? data.assets : [];
+      setAssets(responseAssets);
+      setTotal(data?.count ?? 0);
+      setHasMore(data?.hasMore ?? false);
       setPage(pageIdx);
 
-      if (data.hasMore && data.continuationToken) {
+      if (data?.hasMore && data?.continuationToken) {
         tokenStack.current[pageIdx + 1] = data.continuationToken;
       }
 
-      if (data.departments !== undefined) {
+      if (data?.departments !== undefined) {
         setDepts(data.departments);
       }
     } catch (err) {
