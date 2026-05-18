@@ -32,15 +32,15 @@ module.exports = async function (context, req) {
 
       if (q) {
         conditions.push(
-          '(CONTAINS(LOWER(c._CI_Name_Type_And_Model),@q) OR CONTAINS(LOWER(c.AssetTag),@q) OR ' +
-          'CONTAINS(LOWER(c.SerialNumber),@q) OR CONTAINS(LOWER(c.ivnt_LocationName),@q) OR ' +
-          'CONTAINS(LOWER(c._Department),@q))'
+          '(CONTAINS(LOWER(c.ciName),@q) OR CONTAINS(LOWER(c.assetTag),@q) OR ' +
+          'CONTAINS(LOWER(c.serialNumber),@q) OR CONTAINS(LOWER(c.location),@q) OR ' +
+          'CONTAINS(LOWER(c.Department),@q))'
         );
         parameters.push({ name: '@q', value: q.toLowerCase() });
       }
-      if (dept)   { conditions.push('c._Department = @dept');          parameters.push({ name: '@dept',   value: dept });   }
-      if (type)   { conditions.push('c.ivnt_AssetFullType = @type');   parameters.push({ name: '@type',   value: type });   }
-      if (status) { conditions.push('c.ivnt_AssetFullType = @status'); parameters.push({ name: '@status', value: status }); }
+      if (dept)   { conditions.push('c.Department = @dept');   parameters.push({ name: '@dept',   value: dept });   }
+      if (type)   { conditions.push('c.assetType = @type');    parameters.push({ name: '@type',   value: type });   }
+      if (status) { conditions.push('c.assetType = @status');  parameters.push({ name: '@status', value: status }); }
 
       const where = conditions.length ? ` WHERE ${conditions.join(' AND ')}` : '';
 
@@ -60,7 +60,7 @@ module.exports = async function (context, req) {
       if (isFirst) {
         promises.push(
           c.items
-            .query('SELECT DISTINCT VALUE c._Department FROM c WHERE IS_DEFINED(c._Department) AND c._Department != null')
+            .query('SELECT DISTINCT VALUE c.Department FROM c WHERE IS_DEFINED(c.Department) AND c.Department != null')
             .fetchAll()
             .then(r => r.resources.filter(Boolean).sort())
         );

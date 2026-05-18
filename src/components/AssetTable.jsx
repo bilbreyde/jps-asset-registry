@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { ASSET_FIELDS } from '../utils/fields';
 
 const COLUMNS = [
-  '_CI_Name_Type_And_Model',
-  'AssetTag',
-  'ivnt_AssetFullType',
-  'SerialNumber',
-  'ivnt_LocationName',
-  '_Department',
-  '_Floor',
+  'ciName',
+  'assetTag',
+  'assetType',
+  'serialNumber',
+  'location',
+  'Department',
+  'floor',
 ];
 
 function SortArrow({ dir }) {
@@ -45,7 +45,7 @@ function EmptyState() {
 }
 
 function AssetTable({ assets, onEdit, onDelete }) {
-  const [sortKey, setSortKey] = useState('_CI_Name_Type_And_Model');
+  const [sortKey, setSortKey] = useState('ciName');
   const [sortDir, setSortDir] = useState('asc');
 
   const toggleSort = (key) => {

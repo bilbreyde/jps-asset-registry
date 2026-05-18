@@ -6,11 +6,11 @@ const FIELD_MAP = Object.fromEntries(ASSET_FIELDS.map(f => [f.key, f]));
 const SECTIONS = [
   {
     title: 'Identity',
-    keys: ['_CI_Name_Type_And_Model', 'AssetTag', 'ivnt_AssetFullType', 'ivnt_AssignedModel', 'SerialNumber'],
+    keys: ['ciName', 'assetTag', 'assetType', 'model', 'serialNumber'],
   },
   {
     title: 'Location',
-    keys: ['ivnt_LocationName', '_Department', '_Floor', '_Area'],
+    keys: ['location', 'Department', 'floor', 'area'],
   },
 ];
 
