@@ -24,6 +24,7 @@ export const getAssets = (params = {}) => {
   return request(`/assets${query ? `?${query}` : ''}`);
 };
 
+export const getReports  = ()            => request('/reports');
 export const createAsset = (data)       => request('/assets',       { method: 'POST',   body: JSON.stringify(data) });
 export const updateAsset = (id, data)   => request(`/assets/${id}`, { method: 'PUT',    body: JSON.stringify(data) });
 export const deleteAsset = (id)         => request(`/assets/${id}`, { method: 'DELETE' });

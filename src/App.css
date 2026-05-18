@@ -99,6 +99,29 @@
   letter-spacing: 0.025em;
 }
 
+/* ── Header nav ───────────────────────────────────────────── */
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.4375rem 0.875rem;
+  border-radius: var(--r);
+  color: rgba(255,255,255,0.72);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: all var(--ease);
+  white-space: nowrap;
+}
+.nav-link:hover  { color: white; background: rgba(255,255,255,0.12); }
+.nav-link.nav-active { color: white; background: rgba(255,255,255,0.18); }
+
 .header-user  { display: flex; align-items: center; gap: 0.6rem; }
 .user-avatar  {
   width: 33px; height: 33px;
@@ -618,6 +641,48 @@ select.form-control {
 .toast-enter { animation: toastIn  0.3s cubic-bezier(0.34,1.2,0.64,1) forwards; }
 .toast-exit  { animation: toastOut 0.28s ease forwards; overflow: hidden; }
 
+/* ── Reports page ────────────────────────────────────────── */
+.reports-header {
+  margin-bottom: 1.25rem;
+}
+.reports-heading {
+  margin: 0 0 0.25rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  letter-spacing: -0.02em;
+}
+.reports-sub {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--gray-500);
+}
+
+.reports-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.chart-card {
+  background: var(--white);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--gray-200);
+  padding: 1.25rem 1.5rem 1.5rem;
+}
+
+.chart-title {
+  margin: 0 0 1rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--gray-800);
+  letter-spacing: -0.01em;
+}
+
+.chart-wrap      { position: relative; height: 280px; }
+.chart-wrap-tall { position: relative; height: 420px; }
+
 /* ── Pagination bar ──────────────────────────────────────── */
 .pagination-bar {
   display: flex;
@@ -709,6 +774,7 @@ select.form-control {
   .filter-select { flex: 1; min-width: 0; }
   .pagination-bar { flex-direction: column; align-items: flex-start; }
   .pagination-controls { width: 100%; justify-content: flex-end; }
+  .reports-grid { grid-template-columns: 1fr; }
   .form-grid    { grid-template-columns: 1fr; }
   .modal-backdrop { padding: 0; align-items: flex-end; }
   .modal        { max-height: 96vh; border-radius: var(--r-lg) var(--r-lg) 0 0; }
